@@ -1,13 +1,19 @@
 package main
 
 import (
-	"github.com/Li-Khan/grpc-service/api/protobuf/calendar"
-	"github.com/Li-Khan/grpc-service/internal/calendar_server"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
+	"context"
+	"github.com/Li-Khan/grpc-service/internal/server/calendar"
 	"log"
 	"net"
+
+	pb "github.com/Li-Khan/grpc-service/api/protobuf/calendar"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
+
+type a struct {
+	pb.UnimplementedCalendarServer
+}
 
 func main() {
 	listener, err := net.Listen("tcp", "0.0.0.0:50051")
@@ -19,7 +25,10 @@ func main() {
 	server := grpc.NewServer()
 	reflection.Register(server)
 
-	calendar.RegisterCalendarServer(server, calendar_server.CalendarServer{})
+	calendarServer := calendar.NewCalendarServer()
+
+	pb.RegisterCalendarServer(server, calendarServer)
+	calendarServer.Add(context.Background(), &pb.Event{})
 
 	log.Println(server.Serve(listener))
 }
