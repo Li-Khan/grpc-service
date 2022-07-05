@@ -1,11 +1,9 @@
 package main
 
 import (
-	"context"
 	"flag"
 	"fmt"
 	"github.com/Li-Khan/grpc-service/internal/repository/postgres"
-	"google.golang.org/protobuf/types/known/timestamppb"
 	"log"
 	"net"
 
@@ -46,14 +44,6 @@ func main() {
 	calendarServer := calendar.NewCalendarServer(db)
 
 	pb.RegisterCalendarServer(server, calendarServer)
-
-	event, err := calendarServer.Add(context.Background(), &pb.Event{Name: "ad", Date: timestamppb.Now()})
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	fmt.Println(event)
 
 	log.Printf("starting the grpc server on :%d\n", cfg.BindAddr)
 	log.Println(server.Serve(listener))
