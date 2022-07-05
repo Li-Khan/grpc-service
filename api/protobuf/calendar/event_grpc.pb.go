@@ -23,7 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CalendarClient interface {
 	Add(ctx context.Context, in *Event, opts ...grpc.CallOption) (*Event, error)
-	Update(ctx context.Context, in *UpdateEventRequest, opts ...grpc.CallOption) (*Event, error)
+	Update(ctx context.Context, in *Event, opts ...grpc.CallOption) (*Event, error)
 	GetByID(ctx context.Context, in *GetEventByIDRequest, opts ...grpc.CallOption) (*Event, error)
 	List(ctx context.Context, in *ListEventsRequest, opts ...grpc.CallOption) (Calendar_ListClient, error)
 	Delete(ctx context.Context, in *DeleteEventRequest, opts ...grpc.CallOption) (*Event, error)
@@ -46,7 +46,7 @@ func (c *calendarClient) Add(ctx context.Context, in *Event, opts ...grpc.CallOp
 	return out, nil
 }
 
-func (c *calendarClient) Update(ctx context.Context, in *UpdateEventRequest, opts ...grpc.CallOption) (*Event, error) {
+func (c *calendarClient) Update(ctx context.Context, in *Event, opts ...grpc.CallOption) (*Event, error) {
 	out := new(Event)
 	err := c.cc.Invoke(ctx, "/calendar.Calendar/Update", in, out, opts...)
 	if err != nil {
@@ -110,7 +110,7 @@ func (c *calendarClient) Delete(ctx context.Context, in *DeleteEventRequest, opt
 // for forward compatibility
 type CalendarServer interface {
 	Add(context.Context, *Event) (*Event, error)
-	Update(context.Context, *UpdateEventRequest) (*Event, error)
+	Update(context.Context, *Event) (*Event, error)
 	GetByID(context.Context, *GetEventByIDRequest) (*Event, error)
 	List(*ListEventsRequest, Calendar_ListServer) error
 	Delete(context.Context, *DeleteEventRequest) (*Event, error)
@@ -124,7 +124,7 @@ type UnimplementedCalendarServer struct {
 func (UnimplementedCalendarServer) Add(context.Context, *Event) (*Event, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Add not implemented")
 }
-func (UnimplementedCalendarServer) Update(context.Context, *UpdateEventRequest) (*Event, error) {
+func (UnimplementedCalendarServer) Update(context.Context, *Event) (*Event, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
 }
 func (UnimplementedCalendarServer) GetByID(context.Context, *GetEventByIDRequest) (*Event, error) {
@@ -168,7 +168,7 @@ func _Calendar_Add_Handler(srv interface{}, ctx context.Context, dec func(interf
 }
 
 func _Calendar_Update_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateEventRequest)
+	in := new(Event)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -180,7 +180,7 @@ func _Calendar_Update_Handler(srv interface{}, ctx context.Context, dec func(int
 		FullMethod: "/calendar.Calendar/Update",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CalendarServer).Update(ctx, req.(*UpdateEventRequest))
+		return srv.(CalendarServer).Update(ctx, req.(*Event))
 	}
 	return interceptor(ctx, in, info, handler)
 }

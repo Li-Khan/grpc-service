@@ -28,7 +28,7 @@ message DeleteEventRequest {
 
 service Calendar {
   rpc Add(Event) returns (Event);
-  rpc Update(UpdateEventRequest) returns (Event);
+  rpc Update(Event) returns (Event);
   rpc GetByID(GetEventByIDRequest) returns (Event);
   rpc List(ListEventsRequest) returns (stream Event);
   rpc Delete(DeleteEventRequest) returns (Event);
