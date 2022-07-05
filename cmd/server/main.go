@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/Li-Khan/grpc-service/internal/repository/postgres"
 	"log"
 	"net"
 
@@ -22,7 +23,13 @@ func main() {
 		log.Println(err)
 		return
 	}
-	fmt.Println(cfg)
+
+	db, err := postgres.NewPostgresRepository(cfg)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
 	address := fmt.Sprintf("localhost:%d", cfg.BindAddr)
 
 	listener, err := net.Listen("tcp", address)
@@ -34,7 +41,7 @@ func main() {
 	server := grpc.NewServer()
 	reflection.Register(server)
 
-	calendarServer := calendar.NewCalendarServer()
+	calendarServer := calendar.NewCalendarServer(db)
 
 	pb.RegisterCalendarServer(server, calendarServer)
 

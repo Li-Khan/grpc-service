@@ -1,0 +1,20 @@
+version: '3'
+services:
+  psql:
+    image: postgres:14.1-alpine
+    container_name: postgres-calendar
+    environment:
+      POSTGRES_DB: calendar-db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      PGDATA: /data/postgres
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/1-init.sql
+      - pg-data:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+    restart: unless-stopped
+
+volumes:
+  pg-data:
+    driver: local

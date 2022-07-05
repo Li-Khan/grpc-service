@@ -3,19 +3,32 @@ package calendar
 import (
 	"context"
 	pb "github.com/Li-Khan/grpc-service/api/protobuf/calendar"
+	"github.com/jackc/pgx/v4/pgxpool"
 )
 
 type PbServer struct {
 	pb.UnimplementedCalendarServer
+	db *pgxpool.Pool
 }
 
-func NewCalendarServer() *PbServer {
-	return &PbServer{}
+func NewCalendarServer(db *pgxpool.Pool) *PbServer {
+	return &PbServer{
+		db: db,
+	}
 }
 
 func (c PbServer) Add(ctx context.Context, event *pb.Event) (*pb.Event, error) {
-	//TODO implement me
-	panic("implement me")
+	stmt := `INSERT INTO "event" (
+		"name",
+		"date"
+	VALUES ($1, $2, $3)`
+
+	_, err := c.db.Exec(ctx, stmt, event.Name, event.Date)
+	if err != nil {
+		return nil, err
+	}
+
+	return event, nil
 }
 
 func (c PbServer) Update(ctx context.Context, event *pb.Event) (*pb.Event, error) {
