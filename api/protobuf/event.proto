@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package calendar;
+
+option go_package = "/api/protobuf/calendar";
+
+service Calendar {
+  rpc Add(Event) returns (Events);
+  rpc Update(Event) returns (Events);
+  rpc List(Event) returns (Events);
+  rpc Delete(Event) returns (Events);
+}
+
+import "google/protobuf/timestamp.proto";
+
+message Event {
+  string name = 1;
+  google.protobuf.Timestamp date = 2;
+}
+
+message Events {
+  repeated Event events = 1;
+}
