@@ -21,9 +21,9 @@ func (c PbServer) Add(ctx context.Context, event *pb.Event) (*pb.Event, error) {
 	stmt := `INSERT INTO "event" (
 		"name",
 		"date"
-	VALUES ($1, $2, $3)`
+	) VALUES ($1, $2) RETURNING "id"`
 
-	_, err := c.db.Exec(ctx, stmt, event.Name, event.Date)
+	err := c.db.QueryRow(ctx, stmt, event.Name, event.Date.AsTime()).Scan(&event.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -31,7 +31,7 @@ func (c PbServer) Add(ctx context.Context, event *pb.Event) (*pb.Event, error) {
 	return event, nil
 }
 
-func (c PbServer) Update(ctx context.Context, event *pb.Event) (*pb.Event, error) {
+func (c PbServer) Update(ctx context.Context, request *pb.UpdateEventRequest) (*pb.Event, error) {
 	//TODO implement me
 	panic("implement me")
 }
