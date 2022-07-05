@@ -1,0 +1,8 @@
+{
+  "bind_addr": 50051,
+  "host_db": "localhost",
+  "port_db": 5432,
+  "name_db": "calendar-db",
+  "user_db": "postgres",
+  "password_db": "postgres"
+}

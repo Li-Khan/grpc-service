@@ -1,22 +1,31 @@
 package main
 
 import (
-	"context"
-	"github.com/Li-Khan/grpc-service/internal/server/calendar"
+	"flag"
+	"fmt"
 	"log"
 	"net"
 
 	pb "github.com/Li-Khan/grpc-service/api/protobuf/calendar"
+	"github.com/Li-Khan/grpc-service/configs"
+	"github.com/Li-Khan/grpc-service/internal/server/calendar"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
 
-type a struct {
-	pb.UnimplementedCalendarServer
-}
-
 func main() {
-	listener, err := net.Listen("tcp", "0.0.0.0:50051")
+	cfgPath := flag.String("c", "./configs/config.json", "path to the config file")
+	flag.Parse()
+
+	cfg, err := configs.LoadConfig(*cfgPath)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	fmt.Println(cfg)
+	address := fmt.Sprintf("localhost:%d", cfg.BindAddr)
+
+	listener, err := net.Listen("tcp", address)
 	if err != nil {
 		log.Println(err)
 		return
@@ -28,7 +37,7 @@ func main() {
 	calendarServer := calendar.NewCalendarServer()
 
 	pb.RegisterCalendarServer(server, calendarServer)
-	calendarServer.Add(context.Background(), &pb.Event{})
 
+	log.Printf("starting the grpc server on :%d\n", cfg.BindAddr)
 	log.Println(server.Serve(listener))
 }
