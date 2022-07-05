@@ -80,7 +80,6 @@ type CalendarServer interface {
 	Update(context.Context, *Event) (*Events, error)
 	List(context.Context, *Event) (*Events, error)
 	Delete(context.Context, *Event) (*Events, error)
-	mustEmbedUnimplementedCalendarServer()
 }
 
 // UnimplementedCalendarServer must be embedded to have forward compatible implementations.

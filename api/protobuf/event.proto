@@ -19,5 +19,5 @@ message Event {
 }
 
 message Events {
-  repeated Event events = 1;
+  map<string, Event> events = 3;
 }
