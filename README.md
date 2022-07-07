@@ -21,3 +21,12 @@ https://github.com/OtusTeam/Go/blob/master/project-calendar.md
 - Код должен проходить проверки go vet и golint
 - У преподавателя должна быть возможность заново сгенерировать код по Protobuf спекам
 - У преподавателя должна быть возможность скачать и установить пакет с помощью go get / go install
+
+How to run
+----------
+
+```sh 
+$ make run-db
+$ make run-server
+$ make run-client
+```
