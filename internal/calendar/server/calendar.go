@@ -43,9 +43,9 @@ func (c PbServer) Add(ctx context.Context, event *pb.Event) (*pb.Event, error) {
 
 func (c PbServer) Update(ctx context.Context, event *pb.Event) (*pb.Event, error) {
 	stmt := `
-		UPDATE
+		UPDATE "event"
 		SET "name" = $1, "date" = $2
-		WHERE "id" = $3`
+		WHERE "id" = $3;`
 
 	_, err := c.db.Exec(ctx, stmt, event.Name, event.Date.AsTime(), event.Id)
 	if err != nil {
@@ -64,19 +64,18 @@ func (c PbServer) GetByID(ctx context.Context, request *pb.GetEventByIDRequest) 
 
 	event := pb.Event{}
 	row := c.db.QueryRow(ctx, stmt, request.Id)
-
-	err := row.Scan(&event.Id, &event.Name, &event.Date)
+	t := time.Time{}
+	err := row.Scan(&event.Id, &event.Name, &t)
 	if err != nil {
 		return nil, err
 	}
+	event.Date = timestamppb.New(t)
 
 	return &event, nil
 }
 
 func (c PbServer) List(request *pb.ListEventsRequest, server pb.Calendar_ListServer) error {
 	stmt := `SELECT * FROM "event"`
-
-	event := pb.Event{}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -89,6 +88,7 @@ func (c PbServer) List(request *pb.ListEventsRequest, server pb.Calendar_ListSer
 
 	date := time.Time{}
 	for rows.Next() {
+		event := pb.Event{}
 		err = rows.Scan(&event.Id, &event.Name, &date)
 		event.Date = timestamppb.New(date)
 
