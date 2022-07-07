@@ -1,12 +1,11 @@
 package http_handler
 
 import (
-	"fmt"
 	pb "github.com/Li-Khan/grpc-service/api/protobuf/calendar"
+	"github.com/Li-Khan/grpc-service/internal/helper"
 	"github.com/Li-Khan/grpc-service/internal/http_handler/middleware"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"io"
-	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -38,8 +37,7 @@ func (h *Handler) add(w http.ResponseWriter, r *http.Request) {
 
 	t, err := time.Parse(format, date)
 	if err != nil {
-		log.Println(err)
-		w.WriteHeader(http.StatusInternalServerError)
+		errorHandler(w, helper.ErrInvalidDate)
 		return
 	}
 
@@ -48,14 +46,12 @@ func (h *Handler) add(w http.ResponseWriter, r *http.Request) {
 		Date: timestamppb.New(t),
 	})
 	if err != nil {
-		//TODO handle error
-		log.Println(err)
-		w.WriteHeader(http.StatusInternalServerError)
+		errorHandler(w, err)
 		return
 	}
 
 	w.WriteHeader(http.StatusCreated)
-	fmt.Fprint(w, e)
+	render(w, e)
 }
 
 func (h *Handler) update(w http.ResponseWriter, r *http.Request) {
@@ -65,15 +61,13 @@ func (h *Handler) update(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.ParseInt(paramId, 10, 64)
 	if err != nil {
-		log.Println(err)
-		w.WriteHeader(http.StatusInternalServerError)
+		errorHandler(w, err)
 		return
 	}
 
 	t, err := time.Parse(format, date)
 	if err != nil {
-		log.Println(err)
-		w.WriteHeader(http.StatusBadRequest)
+		errorHandler(w, helper.ErrInvalidDate)
 		return
 	}
 
@@ -83,41 +77,34 @@ func (h *Handler) update(w http.ResponseWriter, r *http.Request) {
 		Date: timestamppb.New(t),
 	})
 	if err != nil {
-		//TODO handle error
-		log.Println(err)
-		w.WriteHeader(http.StatusInternalServerError)
+		errorHandler(w, err)
 		return
 	}
 
-	fmt.Fprint(w, e)
+	render(w, e)
 }
 
 func (h *Handler) get(w http.ResponseWriter, r *http.Request) {
 	param := r.URL.Query().Get("id")
 	id, err := strconv.ParseInt(param, 10, 64)
 	if err != nil {
-		log.Println(err)
-		w.WriteHeader(http.StatusInternalServerError)
+		errorHandler(w, err)
 		return
 	}
 
 	event, err := h.client.GetByID(r.Context(), &pb.GetEventByIDRequest{Id: id})
 	if err != nil {
-		//TODO handle error
-		log.Println(err)
-		w.WriteHeader(http.StatusInternalServerError)
+		errorHandler(w, err)
 		return
 	}
 
-	fmt.Fprint(w, event)
+	render(w, event)
 }
 
 func (h *Handler) list(w http.ResponseWriter, r *http.Request) {
 	stream, err := h.client.List(r.Context(), &pb.ListEventsRequest{})
 	if err != nil {
-		//TODO handle error
-		log.Println(err)
-		w.WriteHeader(http.StatusInternalServerError)
+		errorHandler(w, err)
 		return
 	}
 
@@ -129,32 +116,28 @@ func (h *Handler) list(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 		if err != nil {
-			//TODO handle error
-			log.Println(err)
-			w.WriteHeader(http.StatusInternalServerError)
+			errorHandler(w, err)
 			return
 		}
 		events = append(events, *event)
 	}
 
-	fmt.Fprint(w, events)
+	render(w, events)
 }
 
 func (h *Handler) delete(w http.ResponseWriter, r *http.Request) {
 	param := r.URL.Query().Get("id")
 	id, err := strconv.ParseInt(param, 10, 64)
 	if err != nil {
-		log.Println(err)
-		w.WriteHeader(http.StatusInternalServerError)
+		errorHandler(w, err)
 		return
 	}
 
 	event, err := h.client.Delete(r.Context(), &pb.DeleteEventRequest{Id: id})
 	if err != nil {
-		log.Println(err)
-		w.WriteHeader(http.StatusInternalServerError)
+		errorHandler(w, err)
 		return
 	}
 
-	fmt.Fprint(w, event)
+	render(w, event)
 }

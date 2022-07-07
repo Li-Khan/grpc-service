@@ -3,6 +3,9 @@ package server
 import (
 	"context"
 	pb "github.com/Li-Khan/grpc-service/api/protobuf/calendar"
+	"github.com/Li-Khan/grpc-service/internal/helper"
+	"github.com/jackc/pgconn"
+	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"time"
@@ -34,7 +37,11 @@ func (c PbServer) Add(ctx context.Context, event *pb.Event) (*pb.Event, error) {
 	) VALUES ($1, $2) RETURNING "id"`
 
 	err = c.db.QueryRow(ctx, stmt, event.Name, date).Scan(&event.Id)
+
 	if err != nil {
+		if err.(*pgconn.PgError).Code == "23505" {
+			return nil, helper.ErrAlreadyExist
+		}
 		return nil, err
 	}
 
@@ -49,6 +56,9 @@ func (c PbServer) Update(ctx context.Context, event *pb.Event) (*pb.Event, error
 
 	_, err := c.db.Exec(ctx, stmt, event.Name, event.Date.AsTime(), event.Id)
 	if err != nil {
+		if err.(*pgconn.PgError).Code == "23505" {
+			return nil, helper.ErrAlreadyExist
+		}
 		return nil, err
 	}
 
@@ -67,6 +77,9 @@ func (c PbServer) GetByID(ctx context.Context, request *pb.GetEventByIDRequest) 
 	t := time.Time{}
 	err := row.Scan(&event.Id, &event.Name, &t)
 	if err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, helper.ErrEventNotFound
+		}
 		return nil, err
 	}
 	event.Date = timestamppb.New(t)
@@ -119,6 +132,9 @@ func (c PbServer) Delete(ctx context.Context, request *pb.DeleteEventRequest) (*
 
 	_, err = c.db.Exec(ctx, stmt, request.Id)
 	if err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, helper.ErrEventNotFound
+		}
 		return nil, err
 	}
 
