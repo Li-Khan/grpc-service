@@ -1,5 +1,5 @@
 run-db:
-	docker-compose up -d
+	docker-compose up
 
 run-server:
 	go run ./cmd/server
