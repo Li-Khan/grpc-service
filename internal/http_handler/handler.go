@@ -24,10 +24,10 @@ func NewHandler(client pb.CalendarClient) *http.ServeMux {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/add", middleware.PostMiddleware(h.add))
-	mux.HandleFunc("/update", middleware.PostMiddleware(h.update))
+	mux.HandleFunc("/update", middleware.PutMiddleware(h.update))
 	mux.HandleFunc("/get", middleware.PostMiddleware(h.get))
-	mux.HandleFunc("/list", middleware.PostMiddleware(h.list))
-	mux.HandleFunc("/delete", middleware.PostMiddleware(h.delete))
+	mux.HandleFunc("/list", middleware.GetMiddleware(h.list))
+	mux.HandleFunc("/delete", middleware.DeleteMiddleware(h.delete))
 
 	return mux
 }
@@ -54,6 +54,7 @@ func (h *Handler) add(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.WriteHeader(http.StatusCreated)
 	fmt.Fprint(w, e)
 }
 
