@@ -25,6 +25,8 @@ func GetMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
+//TODO ctx middleware
+
 func PostMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {

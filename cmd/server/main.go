@@ -14,6 +14,10 @@ import (
 	"google.golang.org/grpc/reflection"
 )
 
+func init() {
+	//	TODO bd, migration
+}
+
 func main() {
 	cfgPath := flag.String("c", "./configs/config.json", "path to the config file")
 	flag.Parse()

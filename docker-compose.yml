@@ -4,8 +4,8 @@ services:
     image: postgres:14.1-alpine
     container_name: postgres-calendar
     environment:
-      POSTGRES_DB: calendar-db
-      POSTGRES_USER: postgres
+      POSTGRES_DB: app
+      POSTGRES_USER: app
       POSTGRES_PASSWORD: postgres
       PGDATA: /data/postgres
     volumes:

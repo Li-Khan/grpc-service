@@ -3,8 +3,8 @@
 
   "host_db": "localhost",
   "port_db": 5432,
-  "name_db": "calendar-db",
-  "user_db": "postgres",
+  "name_db": "app",
+  "user_db": "app",
   "password_db": "postgres",
 
   "client_addr": 8080
