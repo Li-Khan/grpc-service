@@ -108,7 +108,7 @@ func (h *Handler) list(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var events []pb.Event
+	var events []*pb.Event
 
 	for {
 		event, err := stream.Recv()
@@ -119,7 +119,8 @@ func (h *Handler) list(w http.ResponseWriter, r *http.Request) {
 			errorHandler(w, err)
 			return
 		}
-		events = append(events, *event)
+
+		events = append(events, event)
 	}
 
 	render(w, events)
