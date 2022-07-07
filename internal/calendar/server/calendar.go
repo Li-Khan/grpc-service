@@ -8,6 +8,7 @@ import (
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"google.golang.org/protobuf/types/known/timestamppb"
+	"log"
 	"time"
 )
 
@@ -45,6 +46,7 @@ func (c PbServer) Add(ctx context.Context, event *pb.Event) (*pb.Event, error) {
 		return nil, err
 	}
 
+	log.Printf("added event: %v\n", event)
 	return event, nil
 }
 
@@ -62,6 +64,7 @@ func (c PbServer) Update(ctx context.Context, event *pb.Event) (*pb.Event, error
 		return nil, err
 	}
 
+	log.Printf("updated event: %v\n", event)
 	return event, nil
 }
 
@@ -84,6 +87,7 @@ func (c PbServer) GetByID(ctx context.Context, request *pb.GetEventByIDRequest) 
 	}
 	event.Date = timestamppb.New(t)
 
+	log.Printf("event received: %v\n", &event)
 	return &event, nil
 }
 
@@ -119,6 +123,7 @@ func (c PbServer) List(request *pb.ListEventsRequest, server pb.Calendar_ListSer
 		return err
 	}
 
+	log.Println("received a list of events")
 	return nil
 }
 
@@ -138,5 +143,6 @@ func (c PbServer) Delete(ctx context.Context, request *pb.DeleteEventRequest) (*
 		return nil, err
 	}
 
+	log.Printf("deleted event: %v\n", event)
 	return event, nil
 }
