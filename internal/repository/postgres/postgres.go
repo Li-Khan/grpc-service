@@ -18,7 +18,13 @@ func NewPostgresRepository(config *configs.Config) (*pgxpool.Pool, error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
+
 	db, err := pgxpool.ConnectConfig(ctx, cfg)
+	if err != nil {
+		return nil, err
+	}
+
+	err = db.Ping(ctx)
 	if err != nil {
 		return nil, err
 	}
