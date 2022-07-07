@@ -28,8 +28,9 @@ func main() {
 	}
 
 	address := fmt.Sprintf("localhost:%d", cfg.BindAddr)
+	dialOption := grpc.WithTransportCredentials(insecure.NewCredentials())
 
-	conn, err := grpc.Dial(address, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.Dial(address, dialOption)
 	defer func() {
 		_ = conn.Close()
 	}()
