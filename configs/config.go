@@ -13,6 +13,8 @@ type Config struct {
 	NameDB     string `json:"name_db,omitempty"`
 	UserDB     string `json:"user_db,omitempty"`
 	PasswordDB string `json:"password_db,omitempty"`
+
+	ClientAddr int `json:"client_addr,omitempty"`
 }
 
 func LoadConfig(path string) (*Config, error) {
@@ -24,6 +26,8 @@ func LoadConfig(path string) (*Config, error) {
 		NameDB:     "postgres",
 		UserDB:     "postgres",
 		PasswordDB: "postgres",
+
+		ClientAddr: 8080,
 	}
 
 	body, err := ioutil.ReadFile(path)

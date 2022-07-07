@@ -3,13 +3,13 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/Li-Khan/grpc-service/internal/calendar/server"
-	"github.com/Li-Khan/grpc-service/internal/repository/postgres"
 	"log"
 	"net"
 
 	pb "github.com/Li-Khan/grpc-service/api/protobuf/calendar"
 	"github.com/Li-Khan/grpc-service/configs"
+	"github.com/Li-Khan/grpc-service/internal/calendar/server"
+	"github.com/Li-Khan/grpc-service/internal/repository/postgres"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
