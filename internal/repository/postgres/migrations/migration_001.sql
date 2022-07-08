@@ -12,7 +12,7 @@ INSERT INTO "event" (
 INSERT INTO "event" (
     "name",
     "date"
-) VALUES ('Nirvana', '1994-02-12');
+) VALUES ('Nirvana concert', '1994-02-12');
 
 INSERT INTO "event" (
     "name",
