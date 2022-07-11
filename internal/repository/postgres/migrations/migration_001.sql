@@ -1,8 +1,11 @@
 CREATE TABLE IF NOT EXISTS "event"(
-    "id" BIGSERIAL PRIMARY KEY,
+    "id" BIGSERIAL PRIMARY KEY,/home/dev@auto.kz/li-khan/course/kafka
     "name" TEXT NOT NULL UNIQUE,
     "date" TIMESTAMP NOT NULL UNIQUE
 );
+
+ALTER TABLE event
+    ADD COLUMN IF NOT EXISTS a TEXT;
 
 INSERT INTO "event" (
     "name",

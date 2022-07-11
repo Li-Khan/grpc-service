@@ -9,7 +9,6 @@ services:
       POSTGRES_PASSWORD: postgres
       PGDATA: /data/postgres
     volumes:
-      - ./internal/repository/postgres/migrations/migration_001.sql:/docker-entrypoint-initdb.d/1-migration_001.sql
       - pg-data:/var/lib/postgresql/data
     ports:
       - '5432:5432'
