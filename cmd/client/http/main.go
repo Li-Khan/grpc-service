@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"flag"
 	"fmt"
 	"log"
 	"net/http"
@@ -17,17 +16,13 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
+func init() {
+	cfg := configs.GetConfig()
+	fmt.Println(cfg)
+}
+
 func main() {
-	cfgPath := flag.String("c", "./configs/config.json", "path to the config file")
-	flag.Parse()
-
-	cfg, err := configs.LoadConfig(*cfgPath)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	address := fmt.Sprintf("localhost:%d", cfg.BindAddr)
+	address := fmt.Sprintf("localhost:%d", configs.GetConfig().BindAddr)
 	dialOption := grpc.WithTransportCredentials(insecure.NewCredentials())
 
 	conn, err := grpc.Dial(address, dialOption)
@@ -43,7 +38,7 @@ func main() {
 
 	handler := http_handler.NewHandler(c)
 
-	address = fmt.Sprintf("localhost:%d", cfg.ClientAddr)
+	address = fmt.Sprintf("localhost:%d", configs.GetConfig().ClientAddr)
 	srv := &http.Server{
 		Addr:           address,
 		Handler:        handler,
@@ -54,7 +49,7 @@ func main() {
 	}
 
 	go func() {
-		log.Printf("starting the client on :%d\n", cfg.ClientAddr)
+		log.Printf("starting the client on :%d\n", configs.GetConfig().ClientAddr)
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Println(err)
 			os.Exit(0)

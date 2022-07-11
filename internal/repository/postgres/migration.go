@@ -5,6 +5,7 @@ import (
 	"github.com/jackc/pgx/v4/pgxpool"
 	"io/ioutil"
 	"path/filepath"
+	"time"
 )
 
 func Migration(db *pgxpool.Pool) error {
@@ -14,13 +15,16 @@ func Migration(db *pgxpool.Pool) error {
 		return err
 	}
 
+	timeout, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
 	for _, file := range files {
 		c, err := ioutil.ReadFile(path + "/" + file.Name())
 		if err != nil {
 			return err
 		}
 
-		_, err = db.Exec(context.Background(), string(c))
+		_, err = db.Exec(timeout, string(c))
 		if err != nil {
 			return err
 		}
