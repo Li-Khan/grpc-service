@@ -5,8 +5,25 @@ import (
 	"fmt"
 	"github.com/Li-Khan/grpc-service/configs"
 	"github.com/jackc/pgx/v4/pgxpool"
+	"sync"
 	"time"
 )
+
+var db *pgxpool.Pool
+var onceDb sync.Once
+
+func GetDb() *pgxpool.Pool {
+	onceDb.Do(func() {
+		var err error
+		cfg := configs.GetConfig()
+		db, err = NewPostgresRepository(cfg)
+		if err != nil {
+			panic(err)
+		}
+	})
+
+	return db
+}
 
 func NewPostgresRepository(config *configs.Config) (*pgxpool.Pool, error) {
 	dsn := fmt.Sprintf("postgres://%s:%s@%s:%d/%s", config.UserDB, config.PasswordDB, config.HostDB, config.PortDB, config.NameDB)

@@ -3,6 +3,7 @@ package configs
 import (
 	"encoding/json"
 	"io/ioutil"
+	"sync"
 )
 
 type Config struct {
@@ -15,6 +16,23 @@ type Config struct {
 	PasswordDB string `json:"password_db,omitempty"`
 
 	ClientAddr int `json:"client_addr,omitempty"`
+}
+
+const cfgPath string = "./configs/config.json"
+
+var cfg *Config
+var onceCfg sync.Once
+
+func GetConfig() *Config {
+	onceCfg.Do(func() {
+		var err error
+
+		cfg, err = LoadConfig(cfgPath)
+		if err != nil {
+			panic(err)
+		}
+	})
+	return cfg
 }
 
 func LoadConfig(path string) (*Config, error) {
